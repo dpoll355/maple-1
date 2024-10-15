@@ -1,0 +1,32 @@
+h:=6.626*10^(-34):  m:=9.1*10^(-31):  e:=1.602*10^(-19):  with(plots):  first_effort:=proc(sym,q)  local u,v,w,pif,twopi,rt3,c,cq,wfn2,wfn,a,A,E0,energy, plotTitle,D, indice, sign;
+pif := evalf(Pi);
+A := rt3*a/2;
+a := 1;
+twopi := 2*pif;
+rt3 := sqrt(3.0);
+u := twopi*y/A;
+v := twopi*(rt3*x/2 - y/2)/A;
+w := twopi - u - v;
+q_scale := 3*q;
+if not (q_scale mod 3 = 1 or q_scale mod 3 = 2) then
+    return "ur q's wrong";
+end if;
+if irem(q_scale, 3) = 1 then
+    sign := 1;
+elif irem(q_scale, 3) = 2 then
+    sign := -1;
+else
+    sign := 0;
+end if;
+p := q + 1;
+if  q>0 then :    #` doesn't catch all cases of invalid input`  E0:=((2* h)/(rt3*10^(-10)))^(2)*(1/(2 m*e)):  energy:=(p^(2)+p*q+q^(2))*E0;  indice:=(twopi)/(3)*sign;
+D := 1.0/sqrt(sqrt(12));
+wfn := D*(exp(I(p*u - q*v)) + exp(I(p*v - q*w + indice)) + exp(I(p*w - q*u - indice)) - exp(-I(p*v - q*u)) - exp(I(indice + (-p*w + q*v))) - exp(-I(p*u - q*w + indice)));
+
+else return "invalid input"      #` more informative output than this should be provided, ideally saying exactly what is wrong!`;
+end if:
+wfn2 := abs(wfn)^2*Heaviside(u)*Heaviside(v)*Heaviside(w);
+plotTitle := cat("q = ", q, ", p = ", p, ", Energy = ", evalf[4](energy/1000), "keV");
+plot3d(wfn2, x = 0 .. 1, y = 0 .. rt3/2, grid = [101, 101], colormap = "Plasma", title = plotTitle, view = [DEFAULT, DEFAULT, 0 .. 10]);
+end proc:
+first_effort(E, 1/3)
